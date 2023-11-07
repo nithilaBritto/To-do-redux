@@ -41,6 +41,12 @@ h2{
     color: var(--title-color);
     margin: var(--margin-val);
 }
+.user{
+    color: var(--title-color);
+    margin-left: 60%;
+    margin-bottom: 10px;
+    /* float: right; */
+}
 .container{
     display: flex;
     flex-direction: column;
