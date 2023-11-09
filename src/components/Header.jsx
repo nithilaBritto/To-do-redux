@@ -1,11 +1,13 @@
 import React from 'react'
 import useFetch from './useFetch'
-function Header() {
-  const [user]=useFetch("https://jsonplaceholder.org/users")
+function Header(props) {
   return (
     <>
-      <span className='user'>Hi {user}</span>
+      {props.pending?<h1>Loading...</h1>:
+      <>
+      <span className='user'>Hi {props.user}</span>
         <h1>TO-DO-LIST</h1>
+      </>}
     </>
   )
 }

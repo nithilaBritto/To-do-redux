@@ -2,13 +2,16 @@ import React from 'react'
 import AddTask from './AddTask';
 import Header from './Header';
 import Tasks from './Tasks';
+import useFetch from './useFetch'
 function Todo() {
     const [task,setTask]=React.useState()
     const [data,setData]=React.useState([])
     const [count,setCount]=React.useState(1)
     const [searchQuery,setSearchQuery]=React.useState('')
     const [filteredData,setFilteredData]=React.useState([])
-    
+    const [user,pending,error]=useFetch("https://jsonplaceholder.org/users")
+
+    console.log(error)
     
     const onSearch=(e)=>{
       setSearchQuery(e.toLowerCase())
@@ -50,11 +53,17 @@ function Todo() {
 
   return (
     <>
-    <div className="container">
-      
-      <Header />
+    <div>
+      {error?<h1>500 Internal Server Error</h1>:
+       pending?<h1>Loading...</h1>:
+       <>
+       <div className="container">
+       <Header user={user} pending={pending}/>
       <AddTask onAdd={onAdd} setTask={setTask} data={data}/>
       <Tasks data={filteredData} onSearch={onSearch} onEdit={handleEdit} onDelete={handleDelete} onModify={onModify} onComplete={taskComplete}/>
+      </div>
+       </>
+      }
     </div>
     </>
   )
