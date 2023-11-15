@@ -13,15 +13,6 @@ import { deleteTodo, editTodo, modifyTodo, updateTodo } from '../redux/userTodos
 function Todo() {
     const userData=useSelector(state=>state.usertodo.userData)
     const userid=useSelector(state=>state.userDetail.id)
-    
-    React.useEffect(()=>{
-      console.log("Inside")
-      const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
-      if(data.length>0&&currUserData.length==0){
-          alert("Changes are not saved ")
-      }
-  },[userid])
-
     const [task,setTask]=React.useState()
     const [data,setData]=React.useState([])
     const [count,setCount]=React.useState(1)
@@ -32,11 +23,23 @@ function Todo() {
     // const [grayout,setgrayout]=React.useState(false)
     const [saveClicked,setSaveClicked]=React.useState(0)
    const dis=useDispatch()
-    
+
+   React.useEffect(()=>{
+    const filteredData=(data.filter(item=>searchQuery?item.task.toLowerCase().includes(searchQuery):true))
+    setFilteredData(filteredData)
+  },[searchQuery,data]) 
+
    React.useEffect(()=>{
     const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
     setData(currUserData)
    },[userid,userData])
+
+//    React.useEffect(()=>{
+//     const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
+//     if(data.length>0&&currUserData.length===0){
+//         alert("Changes are not saved ")
+//     }
+// },[userid])
    
     const errorCode=useSelector(state=>state.userReducer.error)
     const isError=(errorCode===404)
@@ -44,13 +47,8 @@ function Todo() {
       setSearchQuery(e.toLowerCase())
     }
 
-    React.useEffect(()=>{
-      const filteredData=(data.filter(item=>searchQuery?item.task.toLowerCase().includes(searchQuery):true))
-      setFilteredData(filteredData)
-    },[searchQuery,data])
-
     const handleEdit=(id)=>{
-      Object.keys(userData[userid]??{}).length===0&&alert("Please click save before editing")
+      // Object.keys(userData[userid]??{}).length===0&&alert("Please click save before editing")
       const editTask=filteredData.filter(item=>item.id===id)
       dis(editTodo(userid,editTask[0]))
     }
@@ -67,12 +65,12 @@ function Todo() {
 
     const taskComplete=(id)=>{
             
-      const val=isSaved()
-      if(val){
+      // const val=isSaved()
+      // if(val){
         const updateTask=filteredData.filter(item=>item.id===id)
       console.log(updateTask)
       dis(updateTodo(userid,updateTask[0]))
-      }
+      // }
       
   }
 
