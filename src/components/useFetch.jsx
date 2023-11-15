@@ -4,11 +4,12 @@ const useFetch=(url)=>{
     const [user,setUsers]=React.useState('')
     const [pending,setPending]=React.useState(true)
     const [error,setError]=React.useState(null)
-    let randomNum=Math.floor(Math.random()*30)
+    let randomNum=Math.floor(Math.random()*10)
     const fetchUrl=async()=>{
         try{
             const response=await axios.get(url)
-            setUsers(response.data[randomNum].firstname)
+            const name=response.data.map(item=>item.firstname).slice(0,10)
+            setUsers(name[randomNum])
             setPending(false)
             setError(null)
         }

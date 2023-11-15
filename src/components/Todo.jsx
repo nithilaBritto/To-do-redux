@@ -2,71 +2,118 @@ import React from 'react'
 import AddTask from './AddTask';
 import Header from './Header';
 import Tasks from './Tasks';
-import useFetch from './useFetch'
+import DropDown from './DropDown';
+import NoData from './NoData';
+import { useSelector,useDispatch } from 'react-redux';
+import SaveTask from './SaveTask';
+import UserTodo from './UserTodo';
+import { deleteTodo, editTodo, modifyTodo, updateTodo } from '../redux/userTodos/userTodosAction';
+
+
 function Todo() {
+    const userData=useSelector(state=>state.usertodo.userData)
+    const userid=useSelector(state=>state.userDetail.id)
+    
+    React.useEffect(()=>{
+      console.log("Inside")
+      const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
+      if(data.length>0&&currUserData.length==0){
+          alert("Changes are not saved ")
+      }
+  },[userid])
+
     const [task,setTask]=React.useState()
     const [data,setData]=React.useState([])
     const [count,setCount]=React.useState(1)
     const [searchQuery,setSearchQuery]=React.useState('')
     const [filteredData,setFilteredData]=React.useState([])
-    const [user,pending,error]=useFetch("https://jsonplaceholder.org/users")
-
-    console.log(error)
+    const [showToDo,setShowToDo]=React.useState(false)
+    const [save,setSave]=React.useState(false)
+    // const [grayout,setgrayout]=React.useState(false)
+    const [saveClicked,setSaveClicked]=React.useState(0)
+   const dis=useDispatch()
     
+   React.useEffect(()=>{
+    const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
+    setData(currUserData)
+   },[userid,userData])
+   
+    const errorCode=useSelector(state=>state.userReducer.error)
+    const isError=(errorCode===404)
     const onSearch=(e)=>{
       setSearchQuery(e.toLowerCase())
-      //Set Error message
     }
-    
+
     React.useEffect(()=>{
       const filteredData=(data.filter(item=>searchQuery?item.task.toLowerCase().includes(searchQuery):true))
       setFilteredData(filteredData)
     },[searchQuery,data])
 
     const handleEdit=(id)=>{
-      const update=data.map(item=>item.id===id?{...item,isediting:!item.isediting}:item)
-      setData(update)
+      Object.keys(userData[userid]??{}).length===0&&alert("Please click save before editing")
+      const editTask=filteredData.filter(item=>item.id===id)
+      dis(editTodo(userid,editTask[0]))
     }
     
     const handleDelete=(id)=>{
+      const deleteTask=filteredData.filter(item=>item.id===id)
+      dis(deleteTodo(userid,deleteTask[0]))
+    
         //On clicking delete task is removed
+        //When save not clicked
         const newData=data.filter(ele=>ele.id!==id)
         setData(newData)
-        
     }
 
     const taskComplete=(id)=>{
-      //Denoting task is completed
-      setData(data.map(item=>item.id===id?{...item,completed:!item.completed}:item))
+            
+      const val=isSaved()
+      if(val){
+        const updateTask=filteredData.filter(item=>item.id===id)
+      console.log(updateTask)
+      dis(updateTodo(userid,updateTask[0]))
+      }
+      
   }
 
   const onAdd=(task)=>{
-    setCount(prev=>prev+1)
-    //Emptying input tab
-   task&&setData(prev=>(
+      setCount(prev=>prev+1)
+    task&&setData(prev=>(
     [...prev,{id:count,task:task,completed:false,isediting:false}]))
   }
 
-  const onModify=(id,value)=>{
-    setData(data.map(item=>item.id===id?{...item,task:value,isediting:!item.isediting}:item))
+  const onModify=(id,value)=>{    
+    const modifyTask=filteredData.filter(item=>item.id===id)
+      dis(modifyTodo(userid,modifyTask[0],value))
+    // setData(data.map(item=>item.id===id?{...item,task:value,isediting:!item.isediting}:item))
   }
 
+  const isSaved=()=>{
+    const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
+      if(data.length!==currUserData.length){
+          alert("Please save before editing")
+          return false
+      }
+      return true
+  }
   return (
     <>
-    <div>
-      {error?<h1>500 Internal Server Error</h1>:
-       pending?<h1>Loading...</h1>:
-       <>
-       <div className="container">
-       <Header user={user} pending={pending}/>
+      {isError?<h1>404 Error found</h1>:
+      <>
+      <Header />
+      <DropDown setShowToDo={setShowToDo}/>
+      </>
+      }
+      {showToDo ?
+      <>
       <AddTask onAdd={onAdd} setTask={setTask} data={data}/>
       <Tasks data={filteredData} onSearch={onSearch} onEdit={handleEdit} onDelete={handleDelete} onModify={onModify} onComplete={taskComplete}/>
-      </div>
-       </>
-      }
-    </div>
+      {filteredData.length>0&&<SaveTask setSave={setSave} setSaveClicked={setSaveClicked}/>}
+      {save&&<UserTodo data={filteredData}  saveClicked={saveClicked}/>}
+      </>:<NoData isError={isError}/>}
     </>
   )
 }
+
 
 export default Todo

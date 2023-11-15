@@ -6,7 +6,7 @@ function Tasks(props) {
     const {onSearch,onEdit,onDelete,onComplete,onModify,data}=props
   return (
     <>
-        <h2 className="heading2">MY TASKS</h2>
+        {/* <h2 className="heading2">MY TASKS</h2> */}
         <Search onSearch={onSearch}/>
         <>
         <ul className="task-list">
