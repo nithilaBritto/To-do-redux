@@ -20,7 +20,6 @@ function Todo() {
     const [filteredData,setFilteredData]=React.useState([])
     const [showToDo,setShowToDo]=React.useState(false)
     const [save,setSave]=React.useState(false)
-    // const [grayout,setgrayout]=React.useState(false)
     const [saveClicked,setSaveClicked]=React.useState(0)
    const dis=useDispatch()
 
@@ -33,13 +32,6 @@ function Todo() {
     const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
     setData(currUserData)
    },[userid,userData])
-
-//    React.useEffect(()=>{
-//     const currUserData=Object.keys(userData[userid]??{}).length>0?userData[userid]:[]
-//     if(data.length>0&&currUserData.length===0){
-//         alert("Changes are not saved ")
-//     }
-// },[userid])
    
     const errorCode=useSelector(state=>state.userReducer.error)
     const isError=(errorCode===404)
@@ -48,7 +40,6 @@ function Todo() {
     }
 
     const handleEdit=(id)=>{
-      // Object.keys(userData[userid]??{}).length===0&&alert("Please click save before editing")
       const editTask=filteredData.filter(item=>item.id===id)
       dis(editTodo(userid,editTask[0]))
     }
@@ -65,12 +56,11 @@ function Todo() {
 
     const taskComplete=(id)=>{
             
-      // const val=isSaved()
-      // if(val){
+      const val=isSaved()
+      if(val){
         const updateTask=filteredData.filter(item=>item.id===id)
-      console.log(updateTask)
       dis(updateTodo(userid,updateTask[0]))
-      // }
+      }
       
   }
 
@@ -83,7 +73,6 @@ function Todo() {
   const onModify=(id,value)=>{    
     const modifyTask=filteredData.filter(item=>item.id===id)
       dis(modifyTodo(userid,modifyTask[0],value))
-    // setData(data.map(item=>item.id===id?{...item,task:value,isediting:!item.isediting}:item))
   }
 
   const isSaved=()=>{

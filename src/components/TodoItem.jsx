@@ -9,6 +9,8 @@ function TodoItem(props) {
   return (
     <>
         <input type="checkbox" 
+            checked={completed?true:false}
+            onChange={e => {}}
             onClick={(e)=>onComplete(id)}
         />
         <span className={completed?'completed':''}>{task} </span>
